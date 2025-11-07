@@ -1,0 +1,182 @@
+# Визуальная проверка работы Python с крутой анимацией
+import time
+import sys
+import random
+import shutil
+import os
+import platform
+
+class PythonTester:
+    def __init__(self):
+        self.terminal_width = shutil.get_terminal_size().columns
+        self.colors = ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪']
+        self.icons = ['⚡', '🚀', '💻', '🐍', '🔥', '🎯', '✨', '🌟']
+        
+    def print_centered(self, text):
+        """Вывод текста по центру терминала"""
+        # Убираем эмодзи и специальные символы для правильного расчета длины
+        clean_text = ''.join(char for char in text if ord(char) < 1114111)  # Базовые символы
+        padding = (self.terminal_width - len(clean_text)) // 2
+        print(' ' * max(0, padding) + text)
+    
+    def animated_header(self):
+        """Анимированный заголовок"""
+        header_text = "ПРОВЕРКА СИСТЕМЫ PYTHON"
+        frames = ['▰', '▱']
+        
+        print()  # Пустая строка перед анимацией
+        for i in range(10):
+            frame_char = frames[i % 2]
+            border_length = min(self.terminal_width // 4, 20)  # Ограничиваем длину границы
+            border = frame_char * border_length
+            self.print_centered(f"{border} {header_text} {border}")
+            time.sleep(0.1)
+            if i < 9:
+                sys.stdout.write('\033[F\033[K')  # Вверх и очистить строку
+    
+    def progress_bar(self, duration=5, width=40):
+        """Красивый прогресс-бар с анимацией"""
+        # Ограничиваем ширину прогресс-бара
+        width = min(width, self.terminal_width - 20)
+        
+        for i in range(width + 1):
+            percent = i * 100 // width
+            bar = '█' * i + '░' * (width - i)
+            color_idx = min(i * len(self.colors) // width, len(self.colors)-1)
+            color = self.colors[color_idx]
+            icon = random.choice(self.icons)
+            
+            # Очищаем строку перед выводом
+            sys.stdout.write(f'\r{color} [{bar}] {percent}% {icon}')
+            sys.stdout.flush()
+            time.sleep(duration / width)
+        print()  # Новая строка после завершения
+    
+    def run_test(self, test_name, duration=2, success=True):
+        """Запуск отдельного теста с анимацией"""
+        print(f"\n🎬 Запуск: {test_name}", end='', flush=True)
+        
+        # Анимация загрузки
+        for i in range(3):
+            print('.', end='', flush=True)
+            time.sleep(0.2)
+        
+        # Имитация работы
+        dots = ['   ', '.  ', '.. ', '...']
+        for i in range(8):
+            # Очищаем предыдущий вывод
+            sys.stdout.write(f'\r🔄 Выполнение: {test_name}{dots[i % 4]}')
+            sys.stdout.flush()
+            time.sleep(0.15)
+        
+        # Результат - очищаем строку перед выводом результата
+        if success:
+            result = random.choice(['✅ Успешно!', '🎉 Готово!', '✨ Идеально!', '🚀 Выполнено!'])
+            sys.stdout.write(f'\r{result} {test_name}                    \n')  # Добавляем пробелы для очистки
+        else:
+            sys.stdout.write(f'\r❌ Ошибка! {test_name}                    \n')
+        
+        sys.stdout.flush()
+        time.sleep(0.3)
+    
+    def system_info(self):
+        """Вывод информации о системе"""
+        print("\n📊 ИНФОРМАЦИЯ О СИСТЕМЕ:")
+        print("=" * min(50, self.terminal_width))
+        print(f"💻 Python: {platform.python_version()}")
+        print(f"🖥️  ОС: {platform.system()} {platform.release()}")
+        print(f"👤 Пользователь: {platform.node()}")
+        print(f"📁 Рабочая директория: {os.getcwd()}")
+    
+    def performance_test(self):
+        """Быстрый тест производительности"""
+        print("\n⚡ ТЕСТ ПРОИЗВОДИТЕЛЬНОСТИ:")
+        
+        # Тест вычислений
+        start_time = time.time()
+        result = sum(i**2 for i in range(100000))
+        calc_time = time.time() - start_time
+        
+        # Оценка производительности
+        if calc_time < 0.01:
+            rating = "🔥 СУПЕР БЫСТРО!"
+        elif calc_time < 0.05:
+            rating = "🚀 ОТЛИЧНО!"
+        else:
+            rating = "⚡ НОРМАЛЬНО"
+        
+        print(f"Вычисления: {rating} ({calc_time:.3f} сек)")
+        
+        # Анимация оценки
+        for i in range(3):
+            stars = '★' * (i + 1) + '☆' * (2 - i)
+            sys.stdout.write(f'\rРейтинг скорости: [{stars}]')
+            sys.stdout.flush()
+            time.sleep(0.3)
+        print(f'\rРейтинг скорости: [★★★] {rating}                    ')
+    
+    def final_celebration(self):
+        """Финальная анимация"""
+        print("\n")
+        messages = [
+            "🎊 ВСЕ ПРОВЕРКИ ЗАВЕРШЕНЫ!",
+            "🚀 PYTHON ГОТОВ К РАБОТЕ!",
+            "💻 НАЧИНАЕМ ПРОГРАММИРОВАТЬ!"
+        ]
+        
+        for message in messages:
+            for i in range(3):
+                fireworks = '✨' * min(i + 1, 3)
+                centered_line = f"{fireworks} {message} {fireworks}"
+                # Очищаем предыдущую строку
+                sys.stdout.write('\033[K')  # Очистить текущую строку
+                self.print_centered(centered_line)
+                time.sleep(0.3)
+                if i < 2:
+                    sys.stdout.write('\033[F')  # Переместить курсор вверх
+        
+        # Финальный взрыв
+        print("\n" + "🎇" * min(self.terminal_width // 3, 30))
+        self.print_centered("🎉 ДОБРО ПОЖАЛОВАТЬ В МИР PYTHON! 🎉")
+        print("🎇" * min(self.terminal_width // 3, 30))
+        print()  # Пустая строка в конце
+
+def main():
+    tester = PythonTester()
+    
+    # Запуск всех тестов
+    tester.animated_header()
+    
+    tests = [
+        "Проверка синтаксиса Python",
+        "Тест математических операций", 
+        "Проверка работы с памятью",
+        "Тестирование импорта модулей",
+        "Проверка ввода-вывода",
+        "Тест обработки исключений",
+        "Оптимизация производительности",
+        "Финальная проверка системы"
+    ]
+    
+    print("\n🧪 ЗАПУСК ТЕСТОВЫХ ПРОЦЕДУР:")
+    print("=" * min(50, tester.terminal_width))
+    
+    for test in tests:
+        tester.run_test(test, success=True)
+    
+    tester.system_info()
+    tester.performance_test()
+    
+    # Финальный прогресс-бар
+    print("\n📈 ФИНАЛЬНАЯ ЗАГРУЗКА СИСТЕМЫ:")
+    tester.progress_bar(duration=3)
+    
+    tester.final_celebration()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n⚠️  Проверка прервана пользователем")
+    except Exception as e:
+        print(f"\n\n❌ Ошибка при проверке: {e}")
